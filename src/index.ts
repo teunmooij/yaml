@@ -1,9 +1,8 @@
 import * as core from '@actions/core';
-import { join } from 'path';
+import path from 'path';
 import fs from 'fs/promises';
 import * as yaml from 'yaml';
-import * as jp from 'jsonpath';
-import merge from 'deepmerge';
+import { transform } from './transform';
 
 const readFromFile = async (fromPath: string) => {
   const content = await fs.readFile(fromPath, 'utf-8');
@@ -25,10 +24,10 @@ const readInput = async () => {
   if (!fromFile && !inputData) throw new Error('Please provide either from-file or data');
 
   return {
-    data: inputData ? JSON.parse(inputData) : await readFromFile(join(process.env.GITHUB_WORKSPACE!, fromFile!)),
+    data: inputData ? JSON.parse(inputData) : await readFromFile(path.join(process.env.GITHUB_WORKSPACE!, fromFile!)),
     merge: mergeData ? JSON.parse(mergeData) : {},
     set: setData ? JSON.parse(setData) : {},
-    toFile: toFile ? join(process.env.GITHUB_WORKSPACE!, toFile) : null,
+    toFile: toFile ? path.join(process.env.GITHUB_WORKSPACE!, toFile) : null,
   };
 };
 
@@ -37,17 +36,7 @@ const run = async (): Promise<void> => {
     const input = await readInput();
     const { data } = input;
 
-    for (const [path, value] of Object.entries(input.merge)) {
-      jp.apply(data, path, current => merge(current, value as any));
-    }
-
-    for (const [path, value] of Object.entries(input.set)) {
-      jp.apply(data, path, () => value);
-    }
-
-    if (input.toFile) {
-      fs.writeFile(input.toFile, yaml.stringify(data));
-    }
+    transform(data, input.merge, input.set);
 
     core.setOutput('data', data);
   } catch (error: any) {
