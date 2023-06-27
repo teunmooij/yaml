@@ -1,0 +1,24 @@
+name: "Yaml"
+description: "Github action to read, modify and write yaml"
+inputs:
+  from-file:
+    description: "Path to the file to read from"
+    required: false
+  data:
+    description: "The input data as JSON string"
+    required: false
+  to-file:
+    description: "Path to the file to write to"
+    required: false
+  merge:
+    description: "Recursively merge the given data with the input data"
+    required: false
+  set:
+    description: "Overwrite the input data at the given paths with the given data"
+    required: false
+outputs:
+  data:
+    description: "The output data"
+runs:
+  using: "node16"
+  main: "dist/index.js"
