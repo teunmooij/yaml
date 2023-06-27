@@ -22,7 +22,7 @@ jobs:
           set: >
             {
               "foo.bar": "qux",
-              "qux": {"grault": "garply"}
+              "qux": {"grault": "garply"},
               "corge": "garply"
             }
           merge: >
