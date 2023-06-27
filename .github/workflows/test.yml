@@ -15,7 +15,19 @@ jobs:
         with:
           data: >
             {
-              "test": "test"
+              "foo": {"bar": "baz"},
+              "qux": {"quux": "quuz"},
+              "corge": "grault"
+            }
+          set: >
+            {
+              "foo.bar": "qux",
+              "qux": {"grault": "garply"}
+              "corge": "garply"
+            }
+          merge: >
+            {
+              "foo": {"corge": "grault"}
             }
       - name: Use data
         run: echo "Data ${{ steps.yaml-action.outputs.data }}"
