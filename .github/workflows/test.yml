@@ -1,33 +1,15 @@
 on:
-  - push
-  - workflow_dispatch
+  pull_request:
+  workflow_dispatch:
 
 jobs:
-  test-job:
+  run-tests:
     runs-on: ubuntu-latest
-    name: Github action test job
+    name: Run tests
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Test my action
-        id: yaml-action
-        uses: teunmooij/yaml@main
-        with:
-          data: >
-            {
-              "foo": {"bar": "baz"},
-              "qux": {"quux": "quuz"},
-              "corge": "grault"
-            }
-          set: >
-            {
-              "foo.bar": "qux",
-              "qux": {"grault": "garply"},
-              "corge": "garply"
-            }
-          merge: >
-            {
-              "foo": {"corge": "grault"}
-            }
-      - name: Use data
-        run: echo "Data ${{ steps.yaml-action.outputs.data }}"
+      - name: Run the tests
+        run: |
+          npm ci
+          npm test
