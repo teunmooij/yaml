@@ -19,5 +19,8 @@
     "jasmine": true
   },
   "plugins": ["jest", "@typescript-eslint"],
-  "extends": ["plugin:github/recommended", "prettier"]
+  "extends": [
+    "plugin:github/typescript",
+    "prettier"
+  ]
 }

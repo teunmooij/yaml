@@ -1,5 +1,4 @@
-import exp from 'constants';
-import { transform } from '../src/transform';
+import { transform } from '../../src/transform';
 
 describe('transform tests', () => {
   it('sets data', () => {
@@ -12,6 +11,8 @@ describe('transform tests', () => {
     const set = {
       'foo.bar': 'qux',
       qux: { grault: 'garply' },
+      other: 'side',
+      new: { key: 'value' },
       corge: 'waldo',
     };
 
@@ -20,6 +21,8 @@ describe('transform tests', () => {
     expect(result).toEqual({
       foo: { bar: 'qux' },
       qux: { grault: 'garply' },
+      other: 'side',
+      new: { key: 'value' },
       corge: 'waldo',
     });
   });
@@ -36,6 +39,8 @@ describe('transform tests', () => {
       'foo.bar': 'qux',
       qux: { grault: 'garply' },
       corge: 'waldo',
+      other: 'side',
+      new: { key: 'value' },
       list: [4, 5, 6],
     };
 
@@ -45,6 +50,8 @@ describe('transform tests', () => {
       foo: { bar: 'qux' },
       qux: { quux: 'quuz', grault: 'garply' },
       corge: 'waldo',
+      other: 'side',
+      new: { key: 'value' },
       list: [1, 2, 3, 4, 5, 6],
     });
   });

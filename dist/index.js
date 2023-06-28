@@ -1,7 +1,7 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 4822:
+/***/ 9139:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -42,6 +42,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const promises_1 = __importDefault(__nccwpck_require__(3292));
@@ -66,7 +67,7 @@ const readInput = () => __awaiter(void 0, void 0, void 0, function* () {
     if (!fromFile && !inputData)
         throw new Error('Please provide either from-file or data');
     return {
-        data: inputData ? JSON.parse(inputData) : yield readFromFile(path_1.default.join(process.env.GITHUB_WORKSPACE, fromFile)),
+        inputData: inputData ? JSON.parse(inputData) : yield readFromFile(path_1.default.join(process.env.GITHUB_WORKSPACE, fromFile)),
         merge: mergeData ? JSON.parse(mergeData) : {},
         set: setData ? JSON.parse(setData) : {},
         toFile: toFile ? path_1.default.join(process.env.GITHUB_WORKSPACE, toFile) : null,
@@ -75,15 +76,18 @@ const readInput = () => __awaiter(void 0, void 0, void 0, function* () {
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const input = yield readInput();
-        const { data } = input;
-        (0, transform_1.transform)(data, input.merge, input.set);
+        const { inputData } = input;
+        const data = (0, transform_1.transform)(inputData, input.merge, input.set);
+        if (input.toFile) {
+            yield promises_1.default.writeFile(input.toFile, yaml.stringify(data));
+        }
         core.setOutput('data', data);
     }
     catch (error) {
         core.setFailed(error.message);
     }
 });
-run();
+exports.run = run;
 
 
 /***/ }),
@@ -100,18 +104,31 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.transform = void 0;
 const jsonpath_1 = __importDefault(__nccwpck_require__(4378));
 const deepmerge_1 = __importDefault(__nccwpck_require__(6323));
+const clone = (data) => JSON.parse(JSON.stringify(data));
 const toPath = (path) => (path.startsWith('$') ? path : `$.${path}`);
-const transform = (data, mergeData, set) => {
-    for (const [path, value] of Object.entries(mergeData)) {
-        jsonpath_1.default.apply(data, toPath(path), current => {
-            if (typeof current === 'object' && typeof value === 'object') {
-                return (0, deepmerge_1.default)(current, value);
-            }
-            return value;
-        });
+const mergePath = value => current => {
+    if (typeof current === 'object' && typeof value === 'object') {
+        return (0, deepmerge_1.default)(current, value);
     }
-    for (const [path, value] of Object.entries(set)) {
-        jsonpath_1.default.apply(data, toPath(path), () => value);
+    return value;
+};
+const setPath = value => () => value;
+const applyOrAdd = (data, path, value, apply) => {
+    const current = jsonpath_1.default.value(data, path);
+    if (current) {
+        jsonpath_1.default.apply(data, path, apply(value));
+    }
+    else {
+        jsonpath_1.default.value(data, path, value);
+    }
+};
+const transform = (inputData, mergeData, setData) => {
+    const data = clone(inputData);
+    for (const [path, value] of Object.entries(mergeData)) {
+        applyOrAdd(data, toPath(path), value, mergePath);
+    }
+    for (const [path, value] of Object.entries(setData)) {
+        applyOrAdd(data, toPath(path), value, setPath);
     }
     return data;
 };
@@ -22356,13 +22373,19 @@ module.exports = {};
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(4822);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const action_1 = __nccwpck_require__(9139);
+(0, action_1.run)();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
