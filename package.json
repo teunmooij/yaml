@@ -3,7 +3,7 @@
   "description": "Github action to read, modify and write yaml",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build src/index.ts --source-map --license licenses.txt",
+    "build": "ncc build src/index.ts --license licenses.txt",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --quiet --fix",
     "test": "jest -c jest.config.ts"
