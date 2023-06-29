@@ -1,4 +1,4 @@
-name: "Yaml"
+name: "YAML Action"
 description: "Github action to read, modify and write yaml"
 author: "Teun Mooij"
 branding:
