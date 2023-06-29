@@ -1,5 +1,9 @@
 name: "Yaml"
 description: "Github action to read, modify and write yaml"
+author: "Teun Mooij"
+branding:
+  icon: file-text
+  color: yellow
 inputs:
   from-file:
     description: "Path to the file to read from"

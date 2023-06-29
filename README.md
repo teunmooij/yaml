@@ -1,10 +1,10 @@
-# yaml
+# Yaml
 
-Github action to read, modify and write yaml
+This Github Action can be used to read, modify and write yaml files. Supports jsonpath to specify the paths to merge or set given data.
 
-## Usage
+## Example Usage
 
-This action can be used to modify yaml at a given path:
+### Modify a yaml file
 
 ```yml
 jobs:
@@ -23,7 +23,7 @@ jobs:
           merge: { 'environment.secrets': { 'foo': 'bar', 'baz': 'qux' } }
 ```
 
-Or to read data from a yaml file:
+### Read data from a yaml file
 
 ```yml
 jobs:
@@ -42,7 +42,7 @@ jobs:
         run: echo "Data ${{ steps.yaml-action.outputs.data }}"
 ```
 
-Or write data to a yaml file:
+### Write data to a yaml file
 
 ```yml
 jobs:
@@ -62,3 +62,19 @@ jobs:
             }
           to-file: 'helm/values.yml'
 ```
+
+## Input
+
+| Argument  | Description                                                     | Required                               |
+| --------- | --------------------------------------------------------------- | -------------------------------------- |
+| from-file | Path to the file to read from                                   | `true`, if _data_ is not provided      |
+| data      | The input data as JSON string                                   | `true`, if _from-file_ is not provided |
+| to-file   | Path to the file to write to                                    | `false`                                |
+| merge     | Recursively merge the given data with the input data            | `false`                                |
+| set       | Overwrite the input data at the given paths with the given data | `false`                                |
+
+## Output
+
+| Argument | Description     |
+| -------- | --------------- |
+| data     | The output data |
